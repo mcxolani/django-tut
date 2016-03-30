@@ -7,8 +7,6 @@ from rest_framework import generics
 from polls.models import Question
 from polls.serializers import QuestionSerializer
 
-from .models import Question
-
 
 class QuestionList(generics.ListCreateAPIView):
 	"""

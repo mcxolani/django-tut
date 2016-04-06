@@ -1,6 +1,5 @@
 <html>
   <head>
-    <base href="/">
     <title>Angular 2 QuickStart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
 
@@ -16,6 +15,7 @@
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
     <script src="node_modules/angular2/bundles/router.dev.js"></script>
     <script src="node_modules/angular2/bundles/http.dev.js"></script>
+    <script src="//cdn.auth0.com/js/lock-9.0.js"></script>
 
     <!-- 2. Configure SystemJS -->
     <script>
@@ -24,8 +24,14 @@
           app: {
             format: 'register',
             defaultExtension: 'js'
-          }
+          },
+          "/angular2-jwt": {
+          "defaultExtension": "js"
         }
+        },
+         map: {
+        "angular2-jwt": "node_modules/angular2-jwt/angular2-jwt.js"
+      }
       });
       System.import('app/main')
             .then(null, console.error.bind(console));

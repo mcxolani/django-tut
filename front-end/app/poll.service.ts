@@ -10,7 +10,7 @@ import {AuthHttp, AuthConfig, JwtHelper} from 'angular2-jwt';
 export class PollService {
 	constructor(private http: Http, private _auth: AuthHttp, private jwtHelper: JwtHelper) { }
 
-	private _pollsUrl = 'http://jsonplaceholder.typicode.com/posts/1';  // URL to web api
+	private _pollsUrl = 'http://127.0.0.1:8000/polls';  // URL to web api
 
 	getPolls1() {
 		return this.http.get(this._pollsUrl)
@@ -50,6 +50,7 @@ export class PollService {
 		return this.http.post(this._pollsUrl, body, options)
 			.map(res => <Hero>res.json().data)
 			.catch(this.handleError)
+
 	}
 	addPoll1(name: string): Promise<Hero> {
 		let body = JSON.stringify({ name });

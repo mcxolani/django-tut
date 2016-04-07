@@ -1,10 +1,13 @@
 from django.conf.urls import url
-from rest_framework.urlpatterns import format_suffix_patterns
-from . import views
+
+from polls.api import QuestionListCreate, QuestionRetrieveUpdateDestroy, QuestionResultList
 
 urlpatterns = [
-	url(r'^$', views.QuestionList.as_view(), name='index'),
-	url(r'^(?P<pk>[0-9]+)/$', views.QuestionDetail.as_view(), name='detail'),
+    url(r'^$', QuestionListCreate.as_view(), name='question-list'),
+    url(r'^(?P<pk>[0-9]+)/$', QuestionRetrieveUpdateDestroy.as_view(), name='question-detail'),
+    # ex: /polls/5/results/
+    url(r'^(?P<question_id>[0-9]+)/results/$', QuestionResultList.as_view(), name='question-results'),
+    # ex: /polls/5/vote/
+    url(r'^(?P<question_id>[0-9]+)/vote/$', QuestionVote.as_view(), name='question-vote'),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)

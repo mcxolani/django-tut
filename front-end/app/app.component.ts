@@ -4,7 +4,7 @@ import {Component} from 'angular2/core';
 // import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/router';
 import {bootstrap}    from 'angular2/platform/browser';
 import {provide} from 'angular2/core';
-// import {PollService} from './poll.service';
+import {PollService} from './poll.service';
 import {WikipediaComponent} from './wiki/wikipedia.component';
 import {Http, Response} from 'angular2/http';
 import {Observable}     from 'rxjs/Observable';
@@ -24,23 +24,64 @@ export class AppComponent {
 	public title = 'Auth test';
 	polls = null;
 	errorMessage = null;
-	constructor(private http: Http, public authHttp: AuthHttp) {
+	constructor(private http: Http) {
 		this.getThing();
+		// this.getData();
 	}
 
 
 	getThing() {
 			let body = JSON.stringify({ username: "masuku", password: "xolani.m89" });
+			var token = localStorage.getItem('id_token');
+			// var jwtHelper = new JwtHelper();
+			// token = jwtHelper.decodeToken(token);
+			let body2 = JSON.stringify({ token: token }) 
 			var myHeader = new Headers();
 			myHeader.append('Content-Type', 'application/json');
-			return this.authHttp.post("http://jsonplaceholder.typicode.com/posts/1", body, { headers: myHeader })
-				.map(res => res.json())
-				.catch(this._logAndPassOn);
-		
+			this.http.post("http://localhost:8000/api-token-auth/", body, { headers: myHeader })
+				.subscribe(
+				data => {
+					console.log(data.json());
+					localStorage.setItem('id_token',data.json().token)
+					// this.quote = data.json();
+				},
+				err => console.log("dsfdfdf" + err),
+				() => console.log('Complete')
+				);
+
+			this.http.post("http://localhost:8000/api-token-verify/", body2, { headers: myHeader })
+				.subscribe(
+				data => {
+					console.log(data.json());
+					// localStorage.setItem('id_token', data.json().token)
+					// this.quote = data.json();
+				},
+				err => console.log("dsfdfdf" + err),
+				() => console.log('Complete')
+				);
+			// curl - X POST - H "Content-Type: application/json" - d '{"token":"<EXISTING_TOKEN>"}' 
 	}
 	private _logAndPassOn(error: Response) {
 		console.error(error);
 		return Observable.throw(error.json().error || 'Server error');
+	}
+	getData(){
+		var authHeader = new Headers();
+		var token = localStorage.getItem('id_token');
+		var jwtHelper = new JwtHelper();
+		token = jwtHelper.decodeToken(token);
+		console.log(token);
+		// token = window.jwt_decode(token);
+			authHeader.append('Authorization', 'JWT ' + token);
+			this.http.get('http://localhost:8000/polls', { headers: authHeader })
+			.subscribe(
+			data => {
+				console.log(data.json());
+				// this.quote = data.json();
+			},
+			err => console.log(err),
+			() => console.log('Complete')
+			);
 	}
 	// getPoll2(){
 	// 	this._pollService.getPolls2()
@@ -87,6 +128,6 @@ export class AppComponent {
 	// 		.then(
 	// 		hero => this.polls.push(hero),
 	// 		error => this.errorMessage = <any>error);
-	}
+	// }
 	
 } 

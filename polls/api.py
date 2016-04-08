@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, get_object_or_404
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveDestroyAPIView, RetrieveAPIView, UpdateAPIView, CreateAPIView, ListAPIView, ListCreateAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -15,20 +15,27 @@ class QuestionListCreate(ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class QuestionRetrieveUpdateDestroy(ListCreateAPIView):
+class QuestionRetrieveUpdateDestroy(RetrieveDestroyAPIView):
     """docstring for Q"""
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [IsAuthenticated]
 
 
-class QuestionResultList(viewsets.ViewSet):
-    """
-    View all Question vote results
-    """
+class QuestionVote(RetrieveUpdateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
 
-    def retrieve(self, request, pk=None):
-        queryset = Question.objects.all()
-        question = get_object_or_404(queryset, pk=pk)
-        serializer = QuestionSerializer(question)
-        return Response(serializer.data)
+    def put(self, request, *args, **kwargs):
+        question = self.get_object()
+        selected_choice = question.choice_set.get(pk=request.data.get("choice"))
+        selected_choice.votes += 1
+        selected_choice.save()
+        return Response({"success": True})
+
+
+class QuestionViewResults(RetrieveAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
